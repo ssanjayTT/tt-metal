@@ -247,7 +247,7 @@ def test_multimodal_demo_text(
             prefill_start = time.perf_counter()
             if batch_idx == 0:  # Get compile time for first batch
                 with profiler("compile_prefill", iteration=batch_idx):
-                    batch_logits, batch_xattn_masks, batch_text_masks = generator.prefill_forward(
+                    batch_logits, prefill_batch_xattn_masks, prefill_batch_text_masks, decode_batch_xattn_masks, decode_batch_text_masks = generator.prefill_forward(
                         vision_images,
                         vision_mask,
                         tokens,
@@ -258,7 +258,7 @@ def test_multimodal_demo_text(
 
             # Get cached prefill time
             with profiler("inference_prefill", iteration=batch_idx):
-                batch_logits, batch_xattn_masks, batch_text_masks = generator.prefill_forward(
+                batch_logits, prefill_batch_xattn_masks, prefill_batch_text_masks, decode_batch_xattn_masks, decode_batch_text_masks = generator.prefill_forward(
                     vision_images,
                     vision_mask,
                     tokens,
@@ -287,8 +287,10 @@ def test_multimodal_demo_text(
                     logits = generator.decode_forward(
                         position_id,
                         next_token_tensor,
-                        batch_xattn_masks,
-                        batch_text_masks,
+                        prefill_batch_xattn_masks,
+                        prefill_batch_text_masks,
+                        decode_batch_xattn_masks,
+                        decode_batch_text_masks,
                         xattn_caches,
                         enable_trace=enable_trace,
                     )
